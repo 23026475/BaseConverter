@@ -25,11 +25,11 @@ namespace NumberConverter.Controllers
                 return BadRequest(new { error = "Input cannot be empty." });
             }
 
-            if (request.FromBase < 2 || request.FromBase > 16 ||
-                request.ToBase < 2 || request.ToBase > 16)
+            if (request.FromBase < 2 || request.FromBase > 36 || request.ToBase < 2 || request.ToBase > 36)
             {
-                return BadRequest(new { error = "Base must be between 2 and 16." });
+                return BadRequest(new { error = "Base must be between 2 and 36." });
             }
+
 
             try
             {
