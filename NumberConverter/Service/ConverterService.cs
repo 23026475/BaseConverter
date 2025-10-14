@@ -6,10 +6,10 @@ namespace NumberConverter.Service
     {
         public ConversionResponse ConvertNumber(ConversionRequest request)
         {
-            // Validate base
-            if (request.FromBase < 2 || request.FromBase > 16 || request.ToBase < 2 || request.ToBase > 16)
+            // Validate base (now 2–36)
+            if (request.FromBase < 2 || request.FromBase > 36 || request.ToBase < 2 || request.ToBase > 36)
             {
-                throw new Exception("Invalid Base. Supported bases: 2 to 16.");
+                throw new Exception("Invalid Base. Supported bases: 2 to 36.");
             }
 
             if (!IsValidForBase(request.Input, request.FromBase))
@@ -45,15 +45,15 @@ namespace NumberConverter.Service
         private int CharToDigit(char c)
         {
             if (c >= '0' && c <= '9') return c - '0';
-            return c - 'A' + 10; // 'A' -> 10, 'B' -> 11, etc.
+            return c - 'A' + 10; // 'A' -> 10, 'B' -> 11, ..., 'Z' -> 35
         }
 
-        // Helper: convert decimal to any base
+        // Helper: convert decimal to any base (2–36)
         private string DecimalToBase(int decimalValue, int toBase)
         {
             if (decimalValue == 0) return "0";
 
-            string chars = "0123456789ABCDEF";
+            string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             string result = "";
             int value = decimalValue;
             while (value > 0)
@@ -65,13 +65,11 @@ namespace NumberConverter.Service
             return result;
         }
 
-
-        // ✅ Helper method: check if input string is valid for the base
+        // Helper method: check if input string is valid for the base
         private bool IsValidForBase(string input, int fromBase)
         {
             input = input.ToUpper();
-
-            string validChars = "0123456789ABCDEF".Substring(0, fromBase);
+            string validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".Substring(0, fromBase);
             foreach (char c in input)
             {
                 if (!validChars.Contains(c))
