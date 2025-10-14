@@ -1,0 +1,6 @@
+@NumberConverter_HostAddress = http://localhost:5062
+
+GET {{NumberConverter_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
