@@ -1,6 +1,6 @@
-﻿namespace NumberConverter.Controllers
+﻿namespace NumberConverter.Service
 {
-    public class ConversionService
+    public class ConverterService
     {
     }
 }
