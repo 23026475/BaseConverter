@@ -6,33 +6,65 @@ namespace NumberConverter.Service
     {
         public ConversionResponse ConvertNumber(ConversionRequest request)
         {
-            // ✅ Validate input characters for the given base
+            // Validate base
+            if (request.FromBase < 2 || request.FromBase > 16 || request.ToBase < 2 || request.ToBase > 16)
+            {
+                throw new Exception("Invalid Base. Supported bases: 2 to 16.");
+            }
+
             if (!IsValidForBase(request.Input, request.FromBase))
             {
                 throw new FormatException($"Input '{request.Input}' is not valid for base {request.FromBase}.");
             }
 
-            try
+            // Convert input string from any base to decimal
+            int decimalValue = 0;
+            string input = request.Input.ToUpper();
+            for (int i = 0; i < input.Length; i++)
             {
-                // Convert input to decimal
-                int decimalValue = Convert.ToInt32(request.Input, request.FromBase);
-
-                // Convert decimal to target base
-                string convertedValue = Convert.ToString(decimalValue, request.ToBase).ToUpper();
-
-                return new ConversionResponse
-                {
-                    Original = request.Input.ToUpper(),
-                    FromBase = request.FromBase,
-                    ToBase = request.ToBase,
-                    Converted = convertedValue
-                };
+                char c = input[i];
+                int digit = CharToDigit(c);
+                if (digit >= request.FromBase)
+                    throw new FormatException($"Digit '{c}' is invalid for base {request.FromBase}.");
+                decimalValue = decimalValue * request.FromBase + digit;
             }
-            catch (Exception ex)
+
+            // Convert decimal to target base
+            string converted = DecimalToBase(decimalValue, request.ToBase);
+
+            return new ConversionResponse
             {
-                throw new Exception($"Error converting number: {ex.Message}");
-            }
+                Original = input,
+                FromBase = request.FromBase,
+                ToBase = request.ToBase,
+                Converted = converted
+            };
         }
+
+        // Helper: char to numeric value
+        private int CharToDigit(char c)
+        {
+            if (c >= '0' && c <= '9') return c - '0';
+            return c - 'A' + 10; // 'A' -> 10, 'B' -> 11, etc.
+        }
+
+        // Helper: convert decimal to any base
+        private string DecimalToBase(int decimalValue, int toBase)
+        {
+            if (decimalValue == 0) return "0";
+
+            string chars = "0123456789ABCDEF";
+            string result = "";
+            int value = decimalValue;
+            while (value > 0)
+            {
+                int remainder = value % toBase;
+                result = chars[remainder] + result;
+                value /= toBase;
+            }
+            return result;
+        }
+
 
         // ✅ Helper method: check if input string is valid for the base
         private bool IsValidForBase(string input, int fromBase)
