@@ -2,11 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copy csproj and restore as distinct layers
+# Copy and restore
 COPY NumberConverter/*.csproj ./NumberConverter/
 RUN dotnet restore NumberConverter/NumberConverter.csproj
 
-# Copy everything else and build
+# Copy the rest and build
 COPY NumberConverter ./NumberConverter/
 RUN dotnet publish NumberConverter/NumberConverter.csproj -c Release -o /app/out
 
@@ -15,8 +15,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
 
-# Railway expects your app to bind to the PORT environment variable
+# Railway sets the PORT environment variable automatically
 ENV ASPNETCORE_URLS=http://*:$PORT
 
-# 👇 This is the key line (don’t use dotnet run!)
+# ✅ Run the compiled DLL — not `dotnet run`
 ENTRYPOINT ["dotnet", "NumberConverter.dll"]
