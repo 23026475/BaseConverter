@@ -2,27 +2,28 @@ using NumberConverter.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services to the container
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ConverterService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Enable Swagger UI at root for all environments
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Number Converter API V1");
+    c.RoutePrefix = string.Empty; // Swagger is served at "/"
+});
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+
+// Bind to dynamic PORT for Railway
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Urls.Add($"http://*:{port}");
 
 app.Run();
