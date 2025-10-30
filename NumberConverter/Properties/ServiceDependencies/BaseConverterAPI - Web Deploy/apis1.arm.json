@@ -97,11 +97,11 @@
               "type": "Microsoft.ApiManagement/service/apis",
               "name": "BaseConverterAPI/BaseConverterAPI",
               "properties": {
-                "displayName": "BaseConverterAPI",
+                "displayName": "NumberConverter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "apiRevision": "1",
                 "description": null,
                 "subscriptionRequired": true,
-                "serviceUrl": null,
+                "serviceUrl": "https://baseconverterapi-hrgsdecufyedfqa4.southafricanorth-01.azurewebsites.net",
                 "path": "",
                 "protocols": [
                   "https"
