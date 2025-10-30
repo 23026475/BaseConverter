@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Converter API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #0078D4;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        h1, h2 {
+            margin-top: 1.5rem;
+        }
+
+        pre {
+            background: #eaeaea;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        input, select, button {
+            padding: 0.5rem;
+            margin: 0.2rem 0;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .converter {
+            background: white;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .result {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        a {
+            color: #0078D4;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Number Converter API</h1>
+        <p>Convert numbers from any base (2–36) to any other base</p>
+    </header>
+
+    <main>
+        <section class="converter">
+            <h2>Test Converter</h2>
+            <label>Number to convert:</label>
+            <input type="text" id="number" placeholder="Enter number">
+
+            <label>From Base:</label>
+            <input type="number" id="fromBase" min="2" max="36" value="10">
+
+            <label>To Base:</label>
+            <input type="number" id="toBase" min="2" max="36" value="16">
+
+            <button onclick="convertNumber()">Convert</button>
+
+            <div class="result" id="result"></div>
+        </section>
+
+        <section>
+            <h2>How to Use</h2>
+            <p>Send a POST request to <code>/api/convert</code> with JSON:</p>
+            <pre>{
+  "number": "1010",
+  "fromBase": 2,
+  "toBase": 16
+}</pre>
+
+            <p>Example response:</p>
+            <pre>{
+  "original": "1010",
+  "fromBase": 2,
+  "toBase": 16,
+  "converted": "A"
+}</pre>
+
+            <p>Or test it interactively using the form above, or via <a href="/swagger" target="_blank">Swagger UI</a>.</p>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2025 Number Converter API. All rights reserved.
+    </footer>
+
+    <script>
+    async function convertNumber() {
+      const number = document.getElementById('number').value;
+      const fromBase = parseInt(document.getElementById('fromBase').value);
+      const toBase = parseInt(document.getElementById('toBase').value);
+
+      const response = await fetch('/api/convert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ number, fromBase, toBase })
+      });
+
+      if (!response.ok) {
+        document.getElementById('result').innerText = 'Error: ' + response.statusText;
+        return;
+      }
+
+      const data = await response.json();
+      document.getElementById('result').innerText = `Converted: ${data.converted}`;
+    }
+    </script>
+</body>
+</html>

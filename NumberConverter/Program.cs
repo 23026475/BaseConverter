@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -14,21 +14,25 @@ builder.Services.AddSingleton<ConverterService>();
 
 var app = builder.Build();
 
-// Enable Swagger for all environments
+// Serve static files (wwwroot)
+app.UseDefaultFiles();   // serves index.html by default
+app.UseStaticFiles();
+
+// Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Number Converter API V1");
-    c.RoutePrefix = string.Empty;
+    c.RoutePrefix = "swagger"; // Swagger will be at /swagger
 });
 
-// Optional: disable HTTPS for local testing
+// Optional: disable HTTPS locally
 // app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.MapControllers();
 
-// Bind to dynamic HTTP port
+// Bind to dynamic port
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Urls.Add($"http://*:{port}");
 
