@@ -1,39 +1,30 @@
-using NumberConverter.Service;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Builder;
+using NumberConverter;
 
+
+// Get the dynamic port (Heroku, Azure, etc.)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+
+// Build the app
 var builder = WebApplication.CreateBuilder(args);
 
-// Services
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Number Converter API", Version = "v1" });
-});
-builder.Services.AddSingleton<ConverterService>();
+// Set the URLs before building the app
+builder.WebHost.UseUrls($"http://*:{port}");
+
+// Use Startup.cs to configure services
+var startup = new Startup();
+startup.ConfigureServices(builder.Services);
 
 var app = builder.Build();
 
 // Serve static files (wwwroot)
-app.UseDefaultFiles();   // serves index.html by default
 app.UseStaticFiles();
 
-// Swagger
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Number Converter API V1");
-    c.RoutePrefix = "swagger"; // Swagger will be at /swagger
-});
+// Serve default files like index.html
+app.UseDefaultFiles();
 
-// Optional: disable HTTPS locally
-// app.UseHttpsRedirection();
+// Use Startup.cs to configure middleware (API, routing, etc.)
+startup.Configure(app);
 
-app.UseAuthorization();
-app.MapControllers();
-
-// Bind to dynamic port
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-app.Urls.Add($"http://*:{port}");
-
+// Run the app
 app.Run();
