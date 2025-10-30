@@ -1,28 +1,34 @@
 using NumberConverter.Service;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
+// Add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Number Converter API", Version = "v1" });
+});
 builder.Services.AddSingleton<ConverterService>();
 
 var app = builder.Build();
 
-// Enable Swagger UI at root for all environments
+// Enable Swagger for all environments
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Number Converter API V1");
-    c.RoutePrefix = string.Empty; // Swagger is served at "/"
+    c.RoutePrefix = string.Empty;
 });
 
-app.UseHttpsRedirection();
+// Optional: disable HTTPS for local testing
+// app.UseHttpsRedirection();
+
 app.UseAuthorization();
 app.MapControllers();
 
-// Bind to dynamic PORT for Railway
+// Bind to dynamic HTTP port
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Urls.Add($"http://*:{port}");
 
